@@ -1,6 +1,5 @@
 package com.pdhau.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class NewsServiceImpl implements NewsService {
 	public boolean createNews(News news) {
 		News n = null;
 		n = newsRepository.save(news);
-		if(null != n) {
+		if (null != n) {
 			return true;
 		}
 		return false;
@@ -40,19 +39,30 @@ public class NewsServiceImpl implements NewsService {
 	@Override
 	public boolean deleteNews(News news) {
 		News n = null;
-		n = newsRepository.findOne(news.getId());
-		if (n != null) {
-			newsRepository.delete(news);
-			return true;
+		n = newsRepository.findByTitle(news.getTitle());
+		if (n == null) {
+			return false;
 		}
-
-		return false;
+		newsRepository.delete(n);
+		return true;
 	}
 
 	@Override
-	public News deleteAllNews() {
-		// TODO Auto-generated method stub
-		return null;
+	public void deleteAllNews() {
+		newsRepository.deleteAll();
+	}
+
+	@Override
+	public News updateNews(News news) {
+		News n = null;
+		n = newsRepository.findByTitle(news.getTitle());
+		if (n == null) {
+			return null;
+		}
+		n.setContent(news.getContent());
+		n.setTitle(news.getTitle());
+		newsRepository.save(n);
+		return n;
 	}
 
 }

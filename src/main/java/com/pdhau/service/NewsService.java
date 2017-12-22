@@ -13,5 +13,7 @@ public interface NewsService {
 
 	public boolean deleteNews(News news);
 
-	public News deleteAllNews();
+	public void deleteAllNews();
+	
+	public News updateNews(News news);
 }

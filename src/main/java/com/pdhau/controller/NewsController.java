@@ -1,8 +1,11 @@
 package com.pdhau.controller;
 
+import static org.mockito.Matchers.booleanThat;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,13 +32,36 @@ public class NewsController {
 		return new ResponseEntity<List<News>>(news_list, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/news", method = RequestMethod.POST)
+	@RequestMapping(value = "/news", method = RequestMethod.POST, produces = "application/json")
 	public ResponseEntity<News> createNews(@RequestBody News news) {
 		if(!newsService.createNews(news)) {
 			return new ResponseEntity<News>(HttpStatus.NOT_IMPLEMENTED);
 		}
-		return new ResponseEntity<News>(news, HttpStatus.CREATED);
+		return new ResponseEntity<News>(news, HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = "/news", method = RequestMethod.DELETE, produces = "application/json")
+	public ResponseEntity<News> delNews(@RequestBody News news){
+		boolean status = newsService.deleteNews(news);
+		if(!status) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/news/all", method = RequestMethod.DELETE)
+	public ResponseEntity<News> delNews(){
+		newsService.deleteAllNews();
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/news", method = RequestMethod.PUT, produces = "application/json")
+	public ResponseEntity<News> updateNews(@RequestBody News news) {
+		News n = newsService.updateNews(news);
+		if(n == null) {
+			return new ResponseEntity<News>(HttpStatus.NOT_IMPLEMENTED);
+		}
+		return new ResponseEntity<News>(n, HttpStatus.OK);
+	}
 	
 }
