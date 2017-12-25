@@ -1,11 +1,8 @@
 package com.pdhau.controller;
 
-import static org.mockito.Matchers.booleanThat;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
