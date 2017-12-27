@@ -13,12 +13,15 @@ import javax.persistence.Table;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
+
+	
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -75,6 +78,14 @@ public class User implements UserDetails {
 	public boolean isEnabled() {
 		// TODO Auto-generated method stub
 		return enabled;
+	}
+
+	public boolean isValid(String password) {
+		return BCrypt.checkpw(password, this.password);
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.pdhau.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,14 +33,18 @@ public class AuthenticationController {
 	private UserService userService;
 
 	@RequestMapping(value = "/generate-token", method = RequestMethod.POST)
-	public ResponseEntity<?> register(@RequestBody LoginUser loginUser) throws AuthenticationException {
+	public ResponseEntity<AuthToken> register(@RequestBody LoginUser loginUser) throws AuthenticationException {
 
 		final Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		final User user = (User) userService.loadUserByUsername(loginUser.getUsername());
-		final String token = jwtTokenUtil.generateToken(user);
-		return ResponseEntity.ok(new AuthToken(token));
+		if(user.isValid(loginUser.getPassword())){
+			final String token = jwtTokenUtil.generateToken(user);
+			return new ResponseEntity<AuthToken>(new AuthToken(token), HttpStatus.OK);
+		}
+		return new ResponseEntity<AuthToken>(HttpStatus.UNAUTHORIZED);
+		
 	}
 
 }

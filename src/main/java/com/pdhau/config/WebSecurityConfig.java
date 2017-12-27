@@ -45,9 +45,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.cors().and().csrf().disable().authorizeRequests().antMatchers("/token/*").permitAll().antMatchers("/api/*")
-				.hasRole("ADMIN").anyRequest().authenticated().and().exceptionHandling()
-				.authenticationEntryPoint(unauthorizedHandler).and().sessionManagement()
+		http.cors().and().csrf().disable()
+				.authorizeRequests()
+				.antMatchers("/token/*").permitAll()		//accept all
+				.antMatchers("/api/*").hasRole("ADMIN")		//accept only role ADMIN
+				.anyRequest().authenticated()				//other request must be authenticated
+				.and()
+				.exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+				.and()
+				.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
 	}

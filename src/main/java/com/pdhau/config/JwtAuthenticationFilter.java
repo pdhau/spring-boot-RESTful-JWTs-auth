@@ -2,8 +2,8 @@ package com.pdhau.config;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -58,9 +58,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 			if (jwtTokenUtil.validateToken(authToken, userDetails)) {
 				List<SimpleGrantedAuthority> userRole = new ArrayList<SimpleGrantedAuthority>();
-				jwtTokenUtil.getRoleFromToken(authToken);
+				
+				//get Roles form authToken
+				List<Map<String, String>> roles = jwtTokenUtil.getRoleFromToken(authToken);
+				for(Map<String, String> role: roles){
+					userRole.add(new SimpleGrantedAuthority(role.get("authority")));
+				}
+				//end: get Roles form authToken
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-						userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+						userDetails, null, userRole);
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				logger.info("authenticated user " + username + ", setting security context");
 				SecurityContextHolder.getContext().setAuthentication(authentication);
